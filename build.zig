@@ -1,27 +1,15 @@
 const std = @import("std");
 
+// const version = std.SemanticVersion.parse(@import("build.zig.zon").version) catch unreachable;
+const version: std.SemanticVersion = std.SemanticVersion{ .major = 11, .minor = 0, .patch = 0 };
+
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const coretext_enabled = b.option(bool, "enable-coretext", "Build coretext") orelse false;
     const freetype_enabled = b.option(bool, "enable-freetype", "Build freetype") orelse true;
-
-    const freetype = b.dependency("freetype", .{
-        .target = target,
-        .optimize = optimize,
-        .@"enable-libpng" = true,
-    });
     const upstream = b.dependency("harfbuzz", .{});
-
-    const module = b.addModule("harfbuzz", .{
-        .root_source_file = b.path("main.zig"),
-        .target = target,
-        .optimize = optimize,
-        .imports = &.{
-            .{ .name = "freetype", .module = freetype.module("freetype") },
-        },
-    });
 
     const lib = b.addLibrary(.{
         .name = "harfbuzz",
@@ -32,9 +20,9 @@ pub fn build(b: *std.Build) !void {
             .link_libc = true,
             .link_libcpp = true,
         }),
+        .version = version,
     });
     lib.addIncludePath(upstream.path("src"));
-    module.addIncludePath(upstream.path("src"));
 
     const freetype_dep = b.dependency("freetype", .{
         .target = target,
@@ -42,7 +30,7 @@ pub fn build(b: *std.Build) !void {
         .@"enable-libpng" = true,
     });
     lib.linkLibrary(freetype_dep.artifact("freetype"));
-    module.addIncludePath(freetype_dep.builder.dependency("freetype", .{}).path("include"));
+    lib.addIncludePath(freetype_dep.builder.dependency("freetype", .{}).path("include"));
 
     var flags = std.ArrayList([]const u8).init(b.allocator);
     defer flags.deinit();
@@ -68,7 +56,6 @@ pub fn build(b: *std.Build) !void {
     if (coretext_enabled) {
         try flags.appendSlice(&.{"-DHAVE_CORETEXT=1"});
         lib.linkFramework("CoreText");
-        module.linkFramework("CoreText", .{});
     }
 
     lib.addCSourceFile(.{
@@ -82,19 +69,4 @@ pub fn build(b: *std.Build) !void {
     );
 
     b.installArtifact(lib);
-
-    {
-        const test_exe = b.addTest(.{
-            .name = "test",
-            .root_module = module,
-        });
-        test_exe.linkLibrary(lib);
-
-        var it = module.import_table.iterator();
-        while (it.next()) |entry| test_exe.root_module.addImport(entry.key_ptr.*, entry.value_ptr.*);
-        test_exe.linkLibrary(freetype_dep.artifact("freetype"));
-        const tests_run = b.addRunArtifact(test_exe);
-        const test_step = b.step("test", "Run tests");
-        test_step.dependOn(&tests_run.step);
-    }
 }

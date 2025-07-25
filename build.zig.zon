@@ -1,28 +1,18 @@
 .{
     .name = .harfbuzz,
-    .version = "8.5.0",
-    .fingerprint = 0xbd60917c02559d22,
+    .version = "11.0.0",
+    .fingerprint = 0xbd60917ca3743dd3, // Changing this has security and trust implications.
     .minimum_zig_version = "0.14.0",
     .paths = .{
-        "LICENSE",
-        "blob.zig",
-        "buffer.zig",
         "build.zig",
         "build.zig.zon",
-        "c.zig",
-        "common.zig",
-        "errors.zig",
-        "face.zig",
-        "font.zig",
-        "freetype.zig",
-        "main.zig",
-        "shape.zig",
-        "version.zig",
+        "LICENSE",
+        "README.md",
     },
     .dependencies = .{
         .harfbuzz = .{
-            .url = "https://github.com/harfbuzz/harfbuzz/archive/refs/tags/8.5.0.tar.gz",
-            .hash = "N-V-__8AAKwyqQWfrqa-RqyRcNr-9zdBG1SQ6v3eNremxDs3",
+            .url = "https://github.com/harfbuzz/harfbuzz/archive/refs/tags/11.0.0.tar.gz",
+            .hash = "N-V-__8AAG02ugUcWec-Ndp-i7JTsJ0dgF8nnJRUInkGLG7G",
         },
         .freetype = .{
             .url = "git+https://github.com/allyourcodebase/freetype#5a20cf829a5fe4bcd9f5158666b80d5558931b74",
