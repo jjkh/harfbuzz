@@ -11,8 +11,8 @@
     },
     .dependencies = .{
         .harfbuzz = .{
-            .url = "https://github.com/harfbuzz/harfbuzz/archive/refs/tags/11.0.0.tar.gz",
-            .hash = "N-V-__8AAG02ugUcWec-Ndp-i7JTsJ0dgF8nnJRUInkGLG7G",
+            .url = "git+https://github.com/harfbuzz/harfbuzz#290063c64398ebdd0aafb2d30bc96953be5f15e5",
+            .hash = "N-V-__8AAEghiAUxR5yI7yIlsrGwNFIop1XnYsNaqJE9T1U9",
         },
         .freetype = .{
             .url = "git+https://github.com/allyourcodebase/freetype#9d847affbd224cf6a7303ad6d98715e3675ef78c",
