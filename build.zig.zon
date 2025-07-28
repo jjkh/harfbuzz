@@ -1,7 +1,7 @@
 .{
     .name = .harfbuzz,
-    .version = "11.0.0",
-    .fingerprint = 0xbd60917ca3743dd3, // Changing this has security and trust implications.
+    .version = "11.3.3-dev",
+    .fingerprint = 0xbd60917c6171cad2, // Changing this has security and trust implications.
     .minimum_zig_version = "0.14.0",
     .paths = .{
         "build.zig",

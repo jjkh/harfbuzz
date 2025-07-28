@@ -1,15 +1,15 @@
 const std = @import("std");
 
 // const version = std.SemanticVersion.parse(@import("build.zig.zon").version) catch unreachable;
-const version: std.SemanticVersion = std.SemanticVersion{ .major = 11, .minor = 0, .patch = 0 };
+const version: std.SemanticVersion = std.SemanticVersion{ .major = 11, .minor = 3, .patch = 3, .pre = "dev" };
 
 pub fn build(b: *std.Build) !void {
+    const upstream = b.dependency("harfbuzz", .{});
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const coretext_enabled = b.option(bool, "enable-coretext", "Build coretext") orelse false;
     const freetype_enabled = b.option(bool, "enable-freetype", "Build freetype") orelse true;
-    const upstream = b.dependency("harfbuzz", .{});
 
     const lib = b.addLibrary(.{
         .name = "harfbuzz",
@@ -18,19 +18,20 @@ pub fn build(b: *std.Build) !void {
             .target = target,
             .optimize = optimize,
             .link_libc = true,
-            .link_libcpp = true,
+            // https://github.com/ziglang/zig/issues/5312#issuecomment-1219056640
+            .link_libcpp = target.result.abi != .msvc,
         }),
         .version = version,
     });
     lib.addIncludePath(upstream.path("src"));
 
-    const freetype_dep = b.dependency("freetype", .{
-        .target = target,
-        .optimize = optimize,
-        .@"enable-libpng" = true,
-    });
-    lib.linkLibrary(freetype_dep.artifact("freetype"));
-    lib.addIncludePath(freetype_dep.builder.dependency("freetype", .{}).path("include"));
+    if (freetype_enabled) {
+        const freetype_opts = .{ .target = target, .optimize = optimize, .@"enable-libpng" = true };
+        if (b.lazyDependency("freetype", freetype_opts)) |freetype_dep| {
+            lib.linkLibrary(freetype_dep.artifact("freetype"));
+            lib.addIncludePath(freetype_dep.builder.dependency("freetype", .{}).path("include"));
+        }
+    }
 
     var flags: std.ArrayListUnmanaged([]const u8) = .empty;
     defer flags.deinit(b.allocator);
