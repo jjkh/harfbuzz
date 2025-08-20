@@ -15,8 +15,8 @@
             .hash = "N-V-__8AAG02ugUcWec-Ndp-i7JTsJ0dgF8nnJRUInkGLG7G",
         },
         .freetype = .{
-            .url = "git+https://github.com/allyourcodebase/freetype#5a20cf829a5fe4bcd9f5158666b80d5558931b74",
-            .hash = "freetype-2.13.3-C3-WdciJAABmQveLV5bkJxVmby23DYriczRrMhkTinnk",
+            .url = "git+https://github.com/allyourcodebase/freetype#9d847affbd224cf6a7303ad6d98715e3675ef78c",
+            .hash = "freetype-2.13.3-C3-WdeyJAAD9z8BeYYQ8N3gNlPI9NvHRxg5039S5vhz7",
         },
     },
 }

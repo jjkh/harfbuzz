@@ -32,19 +32,19 @@ pub fn build(b: *std.Build) !void {
     lib.linkLibrary(freetype_dep.artifact("freetype"));
     lib.addIncludePath(freetype_dep.builder.dependency("freetype", .{}).path("include"));
 
-    var flags = std.ArrayList([]const u8).init(b.allocator);
-    defer flags.deinit();
-    try flags.appendSlice(&.{
+    var flags: std.ArrayListUnmanaged([]const u8) = .empty;
+    defer flags.deinit(b.allocator);
+    try flags.appendSlice(b.allocator, &.{
         "-DHAVE_STDBOOL_H",
     });
     if (target.result.os.tag != .windows) {
-        try flags.appendSlice(&.{
+        try flags.appendSlice(b.allocator, &.{
             "-DHAVE_UNISTD_H",
             "-DHAVE_SYS_MMAN_H",
             "-DHAVE_PTHREAD=1",
         });
     }
-    if (freetype_enabled) try flags.appendSlice(&.{
+    if (freetype_enabled) try flags.appendSlice(b.allocator, &.{
         "-DHAVE_FREETYPE=1",
 
         // Let's just assume a new freetype
@@ -54,7 +54,7 @@ pub fn build(b: *std.Build) !void {
         "-DHAVE_FT_GET_TRANSFORM=1",
     });
     if (coretext_enabled) {
-        try flags.appendSlice(&.{"-DHAVE_CORETEXT=1"});
+        try flags.appendSlice(b.allocator, &.{"-DHAVE_CORETEXT=1"});
         lib.linkFramework("CoreText");
     }
 
